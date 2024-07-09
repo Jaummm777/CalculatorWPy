@@ -1,50 +1,66 @@
-def adicao (x, y):
-    return x + y
+import tkinter as tk
+from tkinter import messagebox
 
-def subtracao (x, y):
-    return x - y
+class Calculadora:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Calculadora")
 
-def multiplicacao (x, y):
-    return x * y
+        self.operacoes = {
+            '+': self.adicao,
+            '-': self.subtracao,
+            '*': self.multiplicacao,
+            '/': self.divisao
+        }
 
-def div (x, y):
-    if y != 0:
-        return x / y
-    else:
-        return "Erro! Divisão por 0"
-def main():
-    print("Selecione a operação:")
-    print("1. Adição")
-    print("2. Subtração")
-    print("3. Multiplicação")
-    print("4. Divisão")
+        self.create_widgets()
 
-    while True:
-        escolha = input("Digite sua escola (1/2/3/4): ")
-        if escolha in ['1','2','3','4']:
-            num1 = float(input("Digite o primeiro número: "))
-            num2 = float(input("Digite o segundo número: "))
-            if escolha == '1':
-                print(f"{num1} + {num2} = {adicao(num1, num2)}")
+    def adicao(self, x, y):
+        return x + y
 
-            elif escolha == '2':
-                print(f"{num1} - {num2} = {subtracao(num1, num2)}")
+    def subtracao(self, x, y):
+        return x - y
 
-            elif escolha == '3':
-                print(f"{num1} * {num2} = {multiplicacao(num1, num2)}")
+    def multiplicacao(self, x, y):
+        return x * y
 
-            elif escolha == '4':
-                resultado = divisao(num1, num2)
-                if resultado == "Erro! Divisão por zero.":
-                    print(resultado)
-                else:
-                    print(f"{num1} / {num2} = {resultado}")
+    def divisao(self, x, y):
+        if y != 0:
+            return x / y
         else:
-            print("Entrada inválida. Por favor, escolha uma opção válida.")
+            messagebox.showerror("Erro", "Divisão por zero não é permitida")
+            return None
 
-        proxima_operacao = input("Deseja realizar outra operação? (s/n): ")
-        if proxima_operacao.lower() != 's':
-            break
+    def create_widgets(self):
+        self.entry1 = tk.Entry(self.root, width=10)
+        self.entry1.grid(row=0, column=0, padx=5, pady=5)
+
+        self.entry2 = tk.Entry(self.root, width=10)
+        self.entry2.grid(row=0, column=2, padx=5, pady=5)
+
+        self.result_label = tk.Label(self.root, text="Resultado:")
+        self.result_label.grid(row=1, column=1, padx=5, pady=5)
+
+        self.create_buttons()
+
+    def create_buttons(self):
+        row, col = 2, 0
+        for op in self.operacoes:
+            button = tk.Button(self.root, text=op, command=lambda op=op: self.calculate(op))
+            button.grid(row=row, column=col, padx=5, pady=5)
+            col += 1
+
+    def calculate(self, op):
+        try:
+            num1 = float(self.entry1.get())
+            num2 = float(self.entry2.get())
+            resultado = self.operacoes[op](num1, num2)
+            if resultado is not None:
+                self.result_label.config(text=f"Resultado: {resultado}")
+        except ValueError:
+            messagebox.showerror("Erro", "Por favor, insira números válidos")
 
 if __name__ == "__main__":
-    main()
+    root = tk.Tk()
+    app = Calculadora(root)
+    root.mainloop()
